@@ -49,6 +49,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
 import java.util.zip.ZipInputStream
+import android.util.Log
 
 abstract class MagiskInstallImpl protected constructor(
     protected val console: MutableList<String> = NOPList.getInstance(),
@@ -102,6 +103,7 @@ abstract class MagiskInstallImpl protected constructor(
         installDir = localFS.getFile(context.filesDir.parent, "install")
         installDir.deleteRecursively()
         installDir.mkdirs()
+        Log.i("MAGISK", "extractFiles. installDir: ${installDir}")
 
         try {
             // Extract binaries
@@ -362,6 +364,7 @@ abstract class MagiskInstallImpl protected constructor(
         val outStream: OutputStream
         val outFile: MediaStoreUtils.UriFile
 
+        Log.i("MAGISK", "handleFile. uri: ${uri}")
         // Process input file
         try {
             uri.inputStream().buffered().use { src ->
@@ -403,6 +406,7 @@ abstract class MagiskInstallImpl protected constructor(
                     outFile = MediaStoreUtils.getFile("$filename.img", true)
                     outStream = outFile.uri.outputStream()
 
+                    Log.i("MAGISK", "handleFile. outFile: ${outFile}")
                     try {
                         if (magic.contentEquals("CrAU".toByteArray())) {
                             processPayload(src)
@@ -411,6 +415,7 @@ abstract class MagiskInstallImpl protected constructor(
                         } else {
                             console.add("- Copying image to cache")
                             installDir.getChildFile("boot.img").also {
+                                Log.i("MAGISK", "handleFile. child file: ${it}")
                                 src.copyAndCloseOut(it.newOutputStream())
                             }
                         }
@@ -497,11 +502,11 @@ abstract class MagiskInstallImpl protected constructor(
         val cmds = arrayOf(
             "cd $installDir",
             "KEEPFORCEENCRYPT=${Config.keepEnc} " +
-            "KEEPVERITY=${Config.keepVerity} " +
-            "PATCHVBMETAFLAG=${Config.patchVbmeta} " +
-            "RECOVERYMODE=${Config.recovery} " +
-            "SYSTEM_ROOT=${Info.isSAR} " +
-            "sh boot_patch.sh $srcBoot")
+                    "KEEPVERITY=${Config.keepVerity} " +
+                    "PATCHVBMETAFLAG=${Config.patchVbmeta} " +
+                    "RECOVERYMODE=${Config.recovery} " +
+                    "SYSTEM_ROOT=${Info.isSAR} " +
+                    "sh boot_patch.sh $srcBoot")
 
         if (!cmds.sh().isSuccess)
             return false
