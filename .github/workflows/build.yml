@@ -72,6 +72,7 @@ jobs:
         run: python build.py -v ndk
 
       - name: Build release
+        if: ${{ false }}
         run: |
           python build.py -vr all
 
