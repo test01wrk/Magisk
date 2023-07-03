@@ -103,7 +103,7 @@ abstract class MagiskInstallImpl protected constructor(
         installDir = localFS.getFile(context.filesDir.parent, "install")
         installDir.deleteRecursively()
         installDir.mkdirs()
-        Log.i("MAGISK", "extractFiles. installDir: ${installDir}")
+        Log.i("MAGISK", "extractFiles. installDir: ${installDir}, parent=${context.filesDir.parent}")
 
         try {
             // Extract binaries
@@ -142,12 +142,14 @@ abstract class MagiskInstallImpl protected constructor(
                     val name = lib.name.substring(3, lib.name.length - 3)
                     Os.symlink(lib.path, "$installDir/$name")
                 }
+                Log.i("MAGISK", "extractFiles. libs installDir: ${installDir}")
             }
 
             // Extract scripts
             for (script in listOf("util_functions.sh", "boot_patch.sh", "addon.d.sh", "stub.apk")) {
                 val dest = File(installDir, script)
                 context.assets.open(script).writeTo(dest)
+                Log.i("MAGISK", "extractFiles. script installDir: ${installDir}")
             }
             // Extract chromeos tools
             File(installDir, "chromeos").mkdir()
@@ -162,6 +164,7 @@ abstract class MagiskInstallImpl protected constructor(
             return false
         }
 
+        Log.i("MAGISK", "extractFiles. useRootDir: ${useRootDir}")
         if (useRootDir) {
             // Move everything to tmpfs to workaround Samsung bullshit
             rootFS.getFile(Const.TMPDIR).also {
@@ -175,6 +178,7 @@ abstract class MagiskInstallImpl protected constructor(
             }
         }
 
+        Log.i("MAGISK", "extractFiles. final installDir: ${installDir}")
         return true
     }
 
@@ -364,7 +368,7 @@ abstract class MagiskInstallImpl protected constructor(
         val outStream: OutputStream
         val outFile: MediaStoreUtils.UriFile
 
-        Log.i("MAGISK", "handleFile. uri: ${uri}")
+        Log.i("MAGISK", "handleFile.  installDir: ${installDir}, uri: ${uri}")
         // Process input file
         try {
             uri.inputStream().buffered().use { src ->
@@ -414,6 +418,7 @@ abstract class MagiskInstallImpl protected constructor(
                             processZip(ZipInputStream(src))
                         } else {
                             console.add("- Copying image to cache")
+                            Log.i("MAGISK", "handleFile. installDir: ${installDir}")
                             installDir.getChildFile("boot.img").also {
                                 Log.i("MAGISK", "handleFile. child file: ${it}")
                                 src.copyAndCloseOut(it.newOutputStream())
