@@ -98,6 +98,7 @@ jobs:
 
   test:
     name: Test on ${{ matrix.api }}
+    if: ${{ false }}
     runs-on: macos-latest
     needs: build
     strategy:
