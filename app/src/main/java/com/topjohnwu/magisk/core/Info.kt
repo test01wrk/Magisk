@@ -10,6 +10,7 @@ import com.topjohnwu.magisk.core.model.UpdateInfo
 import com.topjohnwu.magisk.core.repository.NetworkService
 import com.topjohnwu.magisk.core.utils.NetworkObserver
 import com.topjohnwu.superuser.ShellUtils.fastCmd
+import java.io.File
 
 val isRunningAsStub get() = Info.stub != null
 
@@ -36,6 +37,7 @@ object Info {
     var crypto = ""
     var noDataExec = false
     var isRooted = false
+    lateinit var nativeLibDir: File
 
     @JvmField var hasGMS = true
     val isSamsung = Build.MANUFACTURER.equals("samsung", ignoreCase = true)

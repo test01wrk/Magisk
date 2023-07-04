@@ -18,6 +18,11 @@ import java.util.jar.JarFile
 
 class ShellInit : Shell.Initializer() {
     override fun onInit(context: Context, shell: Shell): Boolean {
+        val info = context.applicationInfo
+        val libDir = runCatching {
+            info.javaClass.getDeclaredField("secondaryNativeLibraryDir").get(info) as String?
+        }.getOrNull() ?: info.nativeLibraryDir
+        Info.nativeLibDir = File(libDir)
         if (shell.isRoot) {
             Info.isRooted = true
             RootUtils.bindTask?.let { shell.execTask(it) }
@@ -37,7 +42,7 @@ class ShellInit : Shell.Initializer() {
                 jar.getInputStream(bb).writeTo(localBB)
                 localBB.setExecutable(true)
             } else {
-                localBB = File(context.applicationInfo.nativeLibraryDir, "libbusybox.so")
+                localBB = File(libDir, "libbusybox.so")
             }
 
             if (shell.isRoot) {

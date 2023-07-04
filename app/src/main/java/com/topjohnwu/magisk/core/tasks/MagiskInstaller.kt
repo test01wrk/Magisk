@@ -124,17 +124,9 @@ abstract class MagiskInstallImpl protected constructor(
                 }
                 zf.close()
             } else {
-                val info = context.applicationInfo
-                var libs = File(info.nativeLibraryDir).listFiles { _, name ->
+                val libs = Info.nativeLibDir.listFiles { _, name ->
                     name.startsWith("lib") && name.endsWith(".so")
                 } ?: emptyArray()
-
-                // Also symlink magisk32 on non 64-bit only 64-bit devices
-                val lib32 = info.javaClass.getDeclaredField("secondaryNativeLibraryDir")
-                    .get(info) as String?
-                if (lib32 != null) {
-                    libs += File(lib32, "libmagisk32.so")
-                }
 
                 for (lib in libs) {
                     val name = lib.name.substring(3, lib.name.length - 3)
