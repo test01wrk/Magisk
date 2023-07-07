@@ -1,7 +1,7 @@
-APP_ABI          := armeabi-v7a arm64-v8a x86 x86_64
+APP_ABI          := armeabi-v7a arm64-v8a
 APP_CFLAGS       := -Wall -Oz -fomit-frame-pointer -flto
 APP_LDFLAGS      := -flto
-APP_CPPFLAGS     := -std=c++20
+APP_CPPFLAGS     := -std=c++2a
 APP_STL          := none
 APP_PLATFORM     := android-21
 APP_THIN_ARCHIVE := true

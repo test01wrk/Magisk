@@ -405,12 +405,14 @@ def cleanup(args):
 def setup_ndk(args):
     os_name = platform.system().lower()
     ndk_ver = config['ndkVersion']
-    url = f'https://dl.google.com/android/repository/android-ndk-r{ndk_ver}-{os_name}.zip'
+    url = f'https://dl.google.com/android/repository/android-ndk-r{ndk_ver}-{os_name}-x86_64.zip'
     ndk_zip = url.split('/')[-1]
 
     header(f'* Downloading {ndk_zip}')
-    with urllib.request.urlopen(url) as response, open(ndk_zip, 'wb') as out_file:
-        shutil.copyfileobj(response, out_file)
+
+    if not op.exists(ndk_zip):
+        with urllib.request.urlopen(url) as response, open(ndk_zip, 'wb') as out_file:
+            shutil.copyfileobj(response, out_file)
 
     header('* Extracting NDK zip')
     rm_rf(ndk_path)
